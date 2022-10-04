@@ -76,7 +76,7 @@ EXAMPLES = '''
       k8s:
         state: present
         src: /testing/pod.yml
-    
+
     - name: Get an existing Service object
       k8s:
         apiVersion: v1
@@ -100,7 +100,7 @@ EXAMPLES = '''
       k8s:
         state: present
         src: /testing/service.yml
-    
+
     - name: Get an existing Service object
       k8s:
         api_version: v1
@@ -150,6 +150,7 @@ def get_site_packages():
     newest = max(versions, key=_get_formatted_version)
     path_base += '/{0}/site-packages'.format(newest)
     return path_base
+
 
 try:
     from cloudify.cluster import CloudifyClusterClient
@@ -210,7 +211,7 @@ def get_cloudify_client(client_kwargs=None):
         client.manager.get_status()
         return client
     except CloudifyClientError:
-        kwargs = load_local_client_config()
+        kwargs.update(load_local_client_config())
         kwargs.update(client_kwargs)
         client = CloudifyClusterClient(**kwargs)
         client.manager.get_status()
@@ -245,7 +246,6 @@ def assign_dot_json(dj, paths, value):
 
 
 class DotJson(dict):
-
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
@@ -306,7 +306,6 @@ def perform_cloudify_runtime(result,
                              value,
                              node_instance_id,
                              client_kwargs):
-
     try:
         cloudify_client = get_cloudify_client(client_kwargs)
     except (RuntimeError, CloudifyClientError) as e:
