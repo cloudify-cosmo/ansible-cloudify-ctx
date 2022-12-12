@@ -170,6 +170,11 @@ except ImportError:
                 sys.path,
                 str(e))
         )
+    except SyntaxError:
+        raise RuntimeError(
+            'The Cloudify manager is using Python 2.7. '
+            'This indicates that the manager was not installed properly, '
+            'or is misconfigured.')
 
 from ansible.module_utils.basic import AnsibleModule
 
