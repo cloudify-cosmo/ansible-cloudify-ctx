@@ -277,14 +277,22 @@ class DotJson(dict):
 
 
 def update_runtime_property(path, value, node_instance_id, rest_client):
-    instance = rest_client.node_instances.get(node_instance_id)
-    props = DotJson(instance.runtime_properties)
-    assign_dot_json(props, path, value)
-    return rest_client.node_instances.update(
-        node_instance_id=node_instance_id,
-        state=instance.state,
-        runtime_properties=props,
-        version=int(instance.version) + 1)
+    i = 0
+    while True:
+        try:
+            instance = rest_client.node_instances.get(node_instance_id)
+            props = DotJson(instance.runtime_properties)
+            assign_dot_json(props, path, value)
+            return rest_client.node_instances.update(
+                node_instance_id=node_instance_id,
+                state=instance.state,
+                runtime_properties=props,
+                version=int(instance.version) + i)
+        except CloudifyClientError as e:
+            if e.status_code == 409:
+                i += 1
+                continue
+            raise e
 
 
 def setup_module():
